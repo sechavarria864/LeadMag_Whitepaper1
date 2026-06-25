@@ -2632,14 +2632,34 @@ p {
    ============================================================ */
 
 /* ============================================================
-   SOLAR HERO — diagonal split background
-   Upper half: yellow (#F2E519), lower half: white
-   Split line: near-horizontal, slightly clockwise ~6°
+   SOLAR HERO — full-width diagonal split background
+   Upper half: white, lower half: yellow (#F2E519)
+   Split line: near-horizontal, left edge HIGH, right edge LOW (~6° clockwise)
    ============================================================ */
 
-/* Outer wrapper carries the diagonal split */
+/* Full-width wrapper carries the diagonal background */
+.solar-hero-wrap {
+  position: relative;
+  background: #F2E519; /* lower zone — yellow fills behind */
+  overflow: hidden;
+}
+
+/* The diagonal: white covers the upper zone, yellow shows through below */
+.solar-hero-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  /* Left edge is HIGH (45%), right edge is LOW (55%) — correct tilt */
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 55%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Inner constrained grid */
 .solar-hero {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: stretch;
@@ -2648,27 +2668,7 @@ p {
   padding: 120px 0 72px 48px;
   overflow-x: hidden;
   min-height: 600px;
-  background: #ffffff;
-}
-
-/* Diagonal split: pseudo-element covers the yellow upper zone */
-.solar-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #F2E519;
-  /* clip-path diagonal: a horizontal line through ~50% vertical midpoint,
-     rotated ~6° clockwise. Left edge stays higher, right dips lower.
-     Points: top-left → top-right → right-midpoint-lower → left-midpoint-higher */
-  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 55%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* All direct children sit above the pseudo-element */
-.solar-hero > * {
-  position: relative;
-  z-index: 1;
+  background: transparent; /* background now lives on the wrapper */
 }
 
 /* ── LEFT COLUMN ── */
@@ -2677,6 +2677,20 @@ p {
   flex-direction: column;
   justify-content: space-between;
   padding-right: 48px;
+}
+
+/* Badge — plain text, no pill */
+.solar-hero__badge {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #000000;
+  margin-bottom: 1.5rem;
+}
+
+.solar-hero__badge strong {
+  font-weight: 700;
+  margin-left: 0.3em;
 }
 
 /* Title */
@@ -2758,7 +2772,7 @@ p {
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Single slide — no overlay, no fade-to-black */
+/* Single slide */
 .solar-hero__slide {
   flex-shrink: 0;
   width: 100%;
@@ -2780,21 +2794,27 @@ p {
 /* ── MOBILE ── */
 @media (max-width: 767px) {
 
-  /* Full-width section; outer background becomes yellow (top zone) */
+  /* Wrapper: white on top (text zone), yellow bleeds at bottom behind image */
+  .solar-hero-wrap {
+    background: #ffffff; /* bottom zone = white on mobile */
+  }
+
+  /* Diagonal on wrapper: yellow covers the LOWER zone on mobile.
+     Left edge LOW (55%), right edge HIGH (45%) — same tilt direction */
+  .solar-hero-wrap::before {
+    clip-path: polygon(0 55%, 100% 45%, 100% 100%, 0 100%);
+    background: #F2E519;
+  }
+
   .solar-hero {
     grid-template-columns: 1fr;
     padding: 110px 0 0;
     overflow: visible;
     min-height: unset;
-    background: #F2E519; /* top zone is yellow */
+    background: transparent;
   }
 
-  /* On mobile the diagonal split lives on the IMAGE, not the section */
-  .solar-hero::before {
-    display: none; /* disable the desktop pseudo-element */
-  }
-
-  /* Left col: text section — left-aligned, yellow bg */
+  /* Left col: text section — left-aligned */
   .solar-hero__left {
     padding: 0 24px 32px;
     align-items: flex-start;
@@ -2818,7 +2838,6 @@ p {
     margin-bottom: 0;
   }
 
-  /* Hide full button text, show short version */
   .solar-hero__btn-full {
     display: none;
   }
@@ -2833,11 +2852,11 @@ p {
     display: none;
   }
 
-  /* Right col: single card, full width, no horizontal scroll */
+  /* Right col: contained with padding, not full-bleed */
   .solar-hero__carousel-outer {
     clip-path: none;
     overflow: visible;
-    padding: 0;
+    padding: 0 24px 40px;  /* left/right padding keeps it off screen edges */
     align-self: unset;
   }
 
@@ -2848,28 +2867,16 @@ p {
     height: auto;
   }
 
-  /* Single card: diagonal split inside the image on mobile.
-     The split sits at the vertical midpoint of the card, ~6° tilt.
-     Upper half yellow (matching the section above), lower half shows image. */
+  /* Card: bottom-right corner cut off, contained width */
   .solar-hero__slide {
     width: 100%;
-    min-height: 320px;
-    height: 320px;
-    clip-path: none;
-    filter: none;
+    min-height: 260px;
+    height: 260px;
+    /* Bottom-right corner notch cut */
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%);
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
     position: relative;
     overflow: hidden;
-  }
-
-  /* Yellow top zone of the image card — same diagonal logic */
-  .solar-hero__slide::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: #F2E519;
-    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 55%);
-    z-index: 1;
-    pointer-events: none;
   }
 
   .solar-hero__slide img {
@@ -2878,23 +2885,6 @@ p {
     object-fit: cover;
     object-position: center;
     display: block;
-    position: relative;
-    z-index: 0;
-  }
-}
-
-/* ── TABLET (768–1023px) ── */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .solar-hero {
-    padding: 56px 0 56px 32px;
-  }
-
-  .solar-hero__left {
-    padding-right: 32px;
-  }
-
-  .solar-hero__title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
   }
 }
 
