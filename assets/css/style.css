@@ -2640,7 +2640,7 @@ p {
 /* Full-width wrapper carries the diagonal background */
 .solar-hero-wrap {
   position: relative;
-  background: #F2E519; /* lower zone — yellow fills behind */
+  background: #ffffff; /* lower zone — yellow fills behind */
   overflow: hidden;
 }
 
@@ -2649,9 +2649,9 @@ p {
   content: '';
   position: absolute;
   inset: 0;
-  background: #ffffff;
+  background: #F2E519;
   /* Left edge is HIGH (45%), right edge is LOW (55%) — correct tilt */
-  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 55%);
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 0 45%);
   z-index: 0;
   pointer-events: none;
 }
