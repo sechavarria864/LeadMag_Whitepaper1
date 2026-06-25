@@ -2802,9 +2802,9 @@ p {
   /* Diagonal on wrapper: yellow covers the LOWER zone on mobile.
      Left edge LOW (55%), right edge HIGH (45%) — same tilt direction */
   .solar-hero-wrap::before {
-    clip-path: polygon(0 55%, 100% 45%, 100% 100%, 0 100%);
-    background: #F2E519;
-  }
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 55%);
+  background: #F2E519;
+}
 
   .solar-hero {
     grid-template-columns: 1fr;
