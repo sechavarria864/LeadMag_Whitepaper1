@@ -381,7 +381,7 @@ counters.forEach((counter) => {
   });
 })();
 
-/* ── SOLAR HERO CAROUSEL (desktop auto-scroll, mobile native scroll) ── */
+/* ── SOLAR HERO — single card, height match on desktop ── */
 (function () {
   var outer = document.querySelector('.solar-hero__carousel-outer');
   var track = document.getElementById('solarTrack');
@@ -389,13 +389,8 @@ counters.forEach((counter) => {
   if (!outer || !track) return;
 
   var slides = track.querySelectorAll('.solar-hero__slide');
-  var total = slides.length;
-  var current = 0;
-  var autoTimer = null;
-  var CARD_WIDTH_RATIO = 0.80;
-  var GAP = 16;
 
-  /* Match slide height to left column on desktop */
+  /* Match slide height to left column on desktop only */
   function matchHeight() {
     if (window.innerWidth < 768) return;
     var leftCol = document.querySelector('.solar-hero__left');
@@ -407,35 +402,6 @@ counters.forEach((counter) => {
     });
   }
 
-  function isMobile() {
-    return window.innerWidth < 768;
-  }
-
-  function updateTrack() {
-    if (isMobile()) return; /* let native scroll handle it */
-    var cardW = outer.clientWidth * CARD_WIDTH_RATIO;
-    var offset = current * (cardW + GAP);
-    track.style.transform = 'translateX(-' + offset + 'px)';
-  }
-
-  function goNext() {
-    current = (current + 1) % total;
-    updateTrack();
-  }
-
-  function startAuto() {
-    if (autoTimer) clearInterval(autoTimer);
-    autoTimer = setInterval(function () {
-      if (!isMobile()) goNext();
-    }, 5000);
-  }
-
-  window.addEventListener('resize', function () {
-    matchHeight();
-    if (!isMobile()) updateTrack();
-  });
-
+  window.addEventListener('resize', matchHeight);
   matchHeight();
-  updateTrack();
-  startAuto();
 })();
